@@ -3,6 +3,7 @@ package com.gfa.controllers;
 import com.gfa.dtos.ProjectRequestDto;
 import com.gfa.dtos.ProjectResponseDto;
 import com.gfa.exceptions.NameAlreadyExistsException;
+import com.gfa.exceptions.ProjectNotFoundException;
 import com.gfa.models.Project;
 import com.gfa.services.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,26 +43,41 @@ public class ProjectRestController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> show(@PathVariable long id) {
-        // TODO entire method
+    public ResponseEntity<Object> show(@PathVariable String id) {
         try {
             return ResponseEntity.ok(projectService.show(id));
         } catch (Exception exception) {
-            // TODO
-            System.out.println(exception.getMessage());
-            return null;
+            HttpStatus status = HttpStatus.BAD_REQUEST; // 400
+
+            if (exception instanceof ProjectNotFoundException)
+                status = HttpStatus.NOT_FOUND; // 404
+
+            return ResponseEntity.status(status).body(new ProjectResponseDto(exception.getMessage()));
         }
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Object> update(@PathVariable Long id) {
+    @PatchMapping("/{id}")
+    public ResponseEntity<Object> update(@PathVariable String id, @RequestBody ProjectRequestDto projectRequestDto) {
         // TODO entire method
-        return null;
+        try {
+            return ResponseEntity.ok(projectService.update(id, projectRequestDto));
+        } catch (Exception exception) {
+            HttpStatus status = HttpStatus.BAD_REQUEST; // 400
+
+            if (exception instanceof ProjectNotFoundException)
+                status = HttpStatus.NOT_FOUND; // 404
+
+            return ResponseEntity.status(status).body(new ProjectResponseDto(exception.getMessage()));
+        }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> destroy(@PathVariable Long id) {
-        // TODO entire method
-        return null;
+    public ResponseEntity<Object> destroy(@PathVariable String id) {
+        try {
+            return ResponseEntity.ok(projectService.destroy(id));
+        } catch (Exception e) {
+            // TODO !!!
+            return ResponseEntity.status(400).body(new ProjectResponseDto(e.getMessage()));
+        }
     }
 }

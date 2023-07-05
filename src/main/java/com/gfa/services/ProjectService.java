@@ -1,7 +1,8 @@
 package com.gfa.services;
 
 import com.gfa.dtos.ProjectRequestDto;
-import com.gfa.exceptions.InvalidIdException;
+import com.gfa.dtos.ProjectResponseDto;
+import com.gfa.exceptions.ProjectNotFoundException;
 import com.gfa.exceptions.MissingNameException;
 import com.gfa.exceptions.NameAlreadyExistsException;
 import com.gfa.models.Project;
@@ -13,9 +14,9 @@ public interface ProjectService {
 
     Object store(ProjectRequestDto projectRequestDto) throws MissingNameException, NameAlreadyExistsException;
 
-    Object show(long id) throws InvalidIdException;
+    Object show(String id) throws ProjectNotFoundException;
 
-    Object update();
+    Object update(String id, ProjectRequestDto projectRequestDto) throws MissingNameException, NameAlreadyExistsException, ProjectNotFoundException;
 
-    Object destroy();
+    Object destroy(String id) throws ProjectNotFoundException;
 }

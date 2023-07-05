@@ -1,9 +1,10 @@
 package com.gfa.services;
 
 import com.gfa.dtos.ProjectRequestDto;
-import com.gfa.exceptions.InvalidIdException;
+import com.gfa.dtos.ProjectResponseDto;
 import com.gfa.exceptions.MissingNameException;
 import com.gfa.exceptions.NameAlreadyExistsException;
+import com.gfa.exceptions.ProjectNotFoundException;
 import com.gfa.models.Project;
 import com.gfa.repositories.ProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,11 +29,7 @@ public class DatabaseProjectService implements ProjectService {
 
     @Override
     public Object store(ProjectRequestDto projectRequestDto) throws MissingNameException, NameAlreadyExistsException {
-        if (projectRequestDto.getName() == null || projectRequestDto.getName().isEmpty())
-            throw new MissingNameException("Name is required");
-
-        if (projectRepository.existsByName(projectRequestDto.getName()))
-            throw new NameAlreadyExistsException("Name already exists");
+        confirmName(projectRequestDto.getName());
 
         Project project = new Project(projectRequestDto.getName(), projectRequestDto.getDescription());
 
@@ -40,19 +37,51 @@ public class DatabaseProjectService implements ProjectService {
     }
 
     @Override
-    public Object show(long id) throws InvalidIdException{
-        if (!projectRepository.existsById(id))
-            throw new InvalidIdException("Project not found");
-        return projectRepository.findById(id);
+    public Object show(String id) throws ProjectNotFoundException {
+//        return projectRepository.findById(confirmId(id)).orElseThrow(() -> new ProjectNotFoundException("Project not found"));
+        return projectRepository.findById(confirmId(id)).get();
     }
 
     @Override
-    public Object update() {
-        return null;
+    public Object update(String id, ProjectRequestDto projectRequestDto) throws MissingNameException, NameAlreadyExistsException, ProjectNotFoundException {
+        confirmName(projectRequestDto.getName());
+
+        Project project = projectRepository.findById(confirmId(id)).orElseThrow(() -> new ProjectNotFoundException("Project not found"));
+        project.setName(projectRequestDto.getName());
+
+        return projectRepository.save(project);
     }
 
     @Override
-    public Object destroy() {
+    public Object destroy(String id) throws ProjectNotFoundException {
+        long confId = confirmId(id);
+        System.out.println(confId);
+        projectRepository.deleteById(confId);
         return null;
+    }
+
+    private long confirmId(String id) throws ProjectNotFoundException {
+        long confirmedId;
+        try {
+            confirmedId = Long.parseLong(id);
+        } catch (NumberFormatException exception) {
+            throw new NumberFormatException("Invalid id");
+        }
+
+        if (confirmedId < 0)
+            throw new NumberFormatException("Invalid id");
+
+        if (!projectRepository.existsById(confirmedId))
+            throw new ProjectNotFoundException("Project not found");
+
+        return confirmedId;
+    }
+
+    private void confirmName(String name) throws MissingNameException, NameAlreadyExistsException {
+        if (name == null || name.isEmpty())
+            throw new MissingNameException("Name is required");
+
+        if (projectRepository.existsByName(name))
+            throw new NameAlreadyExistsException("Name already exists");
     }
 }
