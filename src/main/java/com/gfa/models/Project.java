@@ -1,6 +1,7 @@
 package com.gfa.models;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -9,16 +10,16 @@ public class Project {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true, length = 50)
     private String name;
     private String description;
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
     private List<Instance> instances;
 
-    public Project(String name, String description, List<Instance> instances) {
+    public Project(String name, String description) {
         this.name = name;
         this.description = description;
-        this.instances = instances;
+        this.instances = new ArrayList<>();
     }
 
     public Project() {

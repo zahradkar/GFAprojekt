@@ -3,11 +3,14 @@ package com.gfa.controllers;
 import com.gfa.dtos.ProjectRequestDto;
 import com.gfa.dtos.ProjectResponseDto;
 import com.gfa.exceptions.NameAlreadyExistsException;
+import com.gfa.models.Project;
 import com.gfa.services.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("projects")
@@ -20,9 +23,8 @@ public class ProjectRestController {
     }
 
     @GetMapping("/")
-    public ResponseEntity index() {
-        // TODO entire method
-        return null;
+    public ResponseEntity<List<Project>> index() {
+        return ResponseEntity.ok(projectService.index());
     }
 
     @PostMapping("/")
@@ -40,19 +42,25 @@ public class ProjectRestController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity show(@PathVariable Long id) {
+    public ResponseEntity<Object> show(@PathVariable long id) {
         // TODO entire method
-        return null;
+        try {
+            return ResponseEntity.ok(projectService.show(id));
+        } catch (Exception exception) {
+            // TODO
+            System.out.println(exception.getMessage());
+            return null;
+        }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity update(@PathVariable Long id) {
+    public ResponseEntity<Object> update(@PathVariable Long id) {
         // TODO entire method
         return null;
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity destroy(@PathVariable Long id) {
+    public ResponseEntity<Object> destroy(@PathVariable Long id) {
         // TODO entire method
         return null;
     }

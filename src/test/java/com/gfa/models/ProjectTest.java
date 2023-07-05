@@ -16,7 +16,7 @@ public class ProjectTest {
         List<Instance> instances = new ArrayList<>();
 
         // Act
-        Project project = new Project(name, description, instances);
+        Project project = new Project(name, description);
 
         // Assert
         Assertions.assertEquals(name, project.getName());
