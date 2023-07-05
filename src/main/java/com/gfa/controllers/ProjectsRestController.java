@@ -15,11 +15,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("projects")
-public class ProjectRestController {
+public class ProjectsRestController {
     private final ProjectService projectService;
 
     @Autowired
-    public ProjectRestController(ProjectService projectService) {
+    public ProjectsRestController(ProjectService projectService) {
         this.projectService = projectService;
     }
 
@@ -74,10 +74,15 @@ public class ProjectRestController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> destroy(@PathVariable String id) {
         try {
+            // TODO deletes the role???
             return ResponseEntity.ok(projectService.destroy(id));
-        } catch (Exception e) {
-            // TODO !!!
-            return ResponseEntity.status(400).body(new ProjectResponseDto(e.getMessage()));
+        } catch (Exception exception) {
+            HttpStatus status = HttpStatus.BAD_REQUEST; // 400
+
+            if (exception instanceof ProjectNotFoundException)
+                status = HttpStatus.NOT_FOUND; // 404
+
+            return ResponseEntity.status(status).body(new ProjectResponseDto(exception.getMessage()));
         }
     }
 }

@@ -54,9 +54,7 @@ public class DatabaseProjectService implements ProjectService {
 
     @Override
     public Object destroy(String id) throws ProjectNotFoundException {
-        long confId = confirmId(id);
-        System.out.println(confId);
-        projectRepository.deleteById(confId);
+        projectRepository.deleteById(confirmId(id));
         return null;
     }
 

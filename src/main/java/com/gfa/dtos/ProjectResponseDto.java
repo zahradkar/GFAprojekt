@@ -1,6 +1,6 @@
 package com.gfa.dtos;
 
-public class ProjectResponseDto {
+public final class ProjectResponseDto {
     private final String error;
 
     public ProjectResponseDto(String error) {

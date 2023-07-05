@@ -4,7 +4,7 @@ import com.gfa.models.Instance;
 
 import java.util.List;
 
-public class ProjectRequestDto {
+public final class ProjectRequestDto {
     private String name;
     private String description;
     private List<Instance> instances;
